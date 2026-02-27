@@ -27,7 +27,7 @@ body{background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); min-height: 
 
 <div class="header">
   <h1>🧩 古月·现代简约风门头提示词生成器</h1>
-  <p>支持白天/夜晚｜异形造型｜字体多样｜8K写实｜100%可施工</p>
+  <p>支持白天/夜晚｜异形造型｜字体多样｜8K写实｜100%可施工｜正立面完全展示｜字体零错误</p>
 </div>
 
 <div class="input-wrap">
@@ -55,64 +55,137 @@ body{background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); min-height: 
 
 <script>
 let allPrompts = [];
-const variants=["主营品类+极简利落标语","特色品类+简约高级标语","招牌品类+干净利落标语","核心品类+极简高级标语","爆款品类+简约利落标语","主营项目+干净高级标语","特色项目+极简简约标语","招牌项目+利落高级标语","核心项目+极简干净标语","爆款项目+简约干净标语","主营服务+利落极简标语","特色服务+高级简约标语","招牌服务+干净极简标语","核心服务+利落干净标语","爆款服务+高级极简标语","主营产品+简约极简标语","特色产品+利落高级标语","招牌产品+极简干净标语","核心产品+简约利落标语","爆款产品+高级干净标语"];
+// 提示词变体模板
+const variants=[
+  "主营品类+极简利落标语",
+  "特色品类+简约高级标语",
+  "招牌品类+干净利落标语",
+  "核心品类+极简高级标语",
+  "爆款品类+简约利落标语",
+  "主营项目+干净高级标语",
+  "特色项目+极简简约标语",
+  "招牌项目+利落高级标语",
+  "核心项目+极简干净标语",
+  "爆款项目+简约干净标语",
+  "主营服务+利落极简标语",
+  "特色服务+高级简约标语",
+  "招牌服务+干净极简标语",
+  "核心服务+利落干净标语",
+  "爆款服务+高级极简标语",
+  "主营产品+简约极简标语",
+  "特色产品+利落高级标语",
+  "招牌产品+极简干净标语",
+  "核心产品+简约利落标语",
+  "爆款产品+高级干净标语"
+];
+// 字体样式列表
 const fonts=["无衬线字体","衬线字体","手写风格字体","粗体现代字体","国潮风字体"];
 
-function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
+// 数组随机打乱函数
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
+}
 
+// 创建单条提示词（重点强化正立面展示和字体无错误）
 function createPrompt(industry,index){
   const variant=variants[index%variants.length];
   const font=fonts[Math.floor(Math.random()*fonts.length)];
   const time=document.getElementById("timeSelect").value;
   const shape=document.getElementById("shapeSelect").value;
+  // 时间描述
   const timeDesc=time==="夜晚"?"夜晚霓虹灯、灯光氛围、强光发光字、灯光反射":"白天自然光、平视无遮挡、柔和正面光";
+  // 造型描述
   const shapeDesc=shape==="平直"?"标准平直门头":shape+"异形门头造型";
-  return `${timeDesc}，门头正立面，完整展示，正面平视视角，无透视畸变，无遮挡，${shapeDesc}，现代简约门头，极简干净，高级利落，线条流畅，无多余装饰，${industry}店铺门头，铝塑板、不锈钢、亚克力、无边软膜灯箱、钢化玻璃、金属精工字、亚克力背光字、烤漆板，品牌店名+${variant}，${font}，8K高清，商业写实效果图，细节丰富，色彩自然，可直接施工参考`;
+  // 拼接完整提示词，重点强化：店铺正立面100%完全展示、字体无错误/零错误/清晰可辨
+  return `${timeDesc}，店铺正立面100%完全展示，无任何遮挡，门头整体完整呈现，正面平视视角，无透视畸变，${shapeDesc}，现代简约门头，极简干净，高级利落，线条流畅，无多余装饰，${industry}店铺门头，铝塑板、不锈钢、亚克力、无边软膜灯箱、钢化玻璃、金属精工字、亚克力背光字、烤漆板，品牌店名+${variant}，${font}，字体零错误、无错别字、笔画清晰可辨、比例精准，8K高清，商业写实效果图，细节丰富，色彩自然，可直接施工参考`;
 }
 
+// 复制单条提示词
 function copySingle(text,btn){
   navigator.clipboard.writeText(text).then(()=>{
     btn.classList.add("copied");
     btn.textContent="已复制";
+    // 3秒后恢复按钮状态
+    setTimeout(()=>{
+      btn.classList.remove("copied");
+      btn.textContent="复制";
+    },3000);
+  }).catch(err=>{
+    alert("复制失败，请手动复制！");
+    console.error("复制失败：", err);
   });
 }
 
+// 复制全部提示词
 function copyAll(){
-  navigator.clipboard.writeText(allPrompts.join("\n\n")).then(()=>{alert("✅ 已成功复制全部20组提示词！");});
+  if(allPrompts.length===0){
+    alert("暂无提示词可复制，请先生成！");
+    return;
+  }
+  navigator.clipboard.writeText(allPrompts.join("\n\n")).then(()=>{
+    alert("✅ 已成功复制全部20组提示词！");
+  }).catch(err=>{
+    alert("复制失败，请手动复制！");
+    console.error("复制失败：", err);
+  });
 }
 
+// 下载TXT文件
 function downloadTxt(){
-  if(allPrompts.length===0){alert("请先生成提示词");return;}
+  if(allPrompts.length===0){
+    alert("请先生成提示词！");
+    return;
+  }
   const blob=new Blob([allPrompts.join("\n\n")],{type:"text/plain;charset=utf-8"});
   const link=document.createElement("a");
   link.href=URL.createObjectURL(blob);
-  link.download="门头提示词.txt";链接.下载="门头提示词.txt"门头提示词.txt文本文本;
-  link链接链接链接链接.click点击点击点击点击();链接.点击();
+  link.download="门头提示词.txt";
+  link.click();
+  // 释放URL对象
+  URL.revokeObjectURL(link.href);
 }
 
+// 生成20组提示词
 function generatePrompts(){
   const industry=document.getElementById("industryInput").value.trim();
-  if(!industry){alert("请输入店铺行业类型");return;}
+  // 验证行业输入
+  if(!industry){
+    alert("请输入店铺行业类型！");
+    return;
+  }
   const genBtn=document.getElementById("genBtn");
   const resultWrap=document.getElementById("resultWrap");
-  genBtn.disabled=true; genBtn.textContent="正在生成...";
-  resultWrap.innerHTML=""; allPrompts=[];
+  // 禁用按钮并修改文字
+  genBtn.disabled=true; 
+  genBtn.textContent="正在生成...";
+  // 清空结果区和提示词数组
+  resultWrap.innerHTML=""; 
+  allPrompts=[];
+  
+  // 模拟生成延迟（提升用户体验）
   setTimeout(()=>{
     allPrompts=[];
     let html="";
+    // 打乱变体顺序
     const shuffledVariants=shuffle([...variants]);
+    // 生成20组提示词
     for(let i=0;i<20;i++){
       const prompt=createPrompt(industry,i);
       allPrompts.push(prompt);
+      // 拼接结果项HTML
       html+=`<div class="result-item">
-        <div class="item-text">${i+1}. ${prompt}</div><div class="item-text">${i+1}. ${提示}</div>
+        <div class="item-text">${i+1}. ${prompt}</div>
         <button class="copy-btn" onclick="copySingle('${prompt.replace(/'/g,"&apos;")}',this)">复制</button>
       </div>`;
     }
+    // 添加批量操作按钮
     html+=`<button class="copy-all-btn" onclick="copyAll()">📋 一键复制全部20组</button>`;
     html+=`<button class="download-btn" onclick="downloadTxt()">💾 下载TXT文件</button>`;
+    // 渲染结果
     resultWrap.innerHTML=html;
-    genBtn.disabled=false; genBtn.textContent="🚀 生成20组提示词";
+    // 恢复按钮状态
+    genBtn.disabled=false; 
+    genBtn.textContent="🚀 生成20组提示词";
   },500);
 }
 </script>
